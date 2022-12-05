@@ -1,7 +1,7 @@
 <link rel="import" href="./bower_components/polymer/polymer.html">
 
 
-<polymer-element name="g-spectrogram-controls" attributes="log labels ticks speed color">
+<polymer-element name="g-spectrogram-controls" attributes="log labels ticks speed color min_rescale">
   <template>
     <style>
       summary {list-style: none}
@@ -43,8 +43,12 @@
           <input type="range" id="speed" value="{{speed}}" min="1" max="5" />
         </div>
         <div class="config">
-        <label for="labels">Show labels</label>
-        <input type="checkbox" id="labels" checked="{{labels}}">
+          <label for="labels">Show labels</label>
+          <input type="checkbox" id="labels" checked="{{labels}}">
+        </div>
+        <div class="config">
+          <label for="Rescale">Rescale cmap min</label>
+          <input type="range" id="min_rescale" value="{{min_rescale}}" min="1" max="255" />
         </div>
         <template if="{{labels}}">
           <div class="config">
@@ -52,7 +56,7 @@
           <input type="range" id="ticks" value="{{ticks}}" min="2" max="10" />
           </div>
         </template>
-        </template>
     </details>
+  </template>
   <script src="g-spectrogram-controls.js"></script>
 </polymer-element>
