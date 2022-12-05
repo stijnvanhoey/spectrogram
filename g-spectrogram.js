@@ -8,7 +8,8 @@ Polymer('g-spectrogram', {
   ticks: 5,
   speed: 2,
   // FFT bin size,
-  fftsize: 2048,
+  fftsize: 2048*4,   // TODO - ADJUST WINDOW with factor
+  min_rescale: 1,
   oscillator: false,
   color: false,
 
@@ -222,7 +223,7 @@ Polymer('g-spectrogram', {
   onStream: function(stream) {
     var input = this.audioContext.createMediaStreamSource(stream);
     var analyser = this.audioContext.createAnalyser();
-    analyser.smoothingTimeConstant = 0;
+    analyser.smoothingTimeConstant = 0.5;  // TODO - ADJUST [0-1]
     analyser.fftSize = this.fftsize;
 
     // Connect graph.
@@ -244,8 +245,10 @@ Polymer('g-spectrogram', {
   },
 
   getFullColor: function(value) {
-    // TODO - we can use other colormaps here as well
-    return d3.interpolateViridis(value / 255)
+    // rescale the data to a new data range
+    let min_range = this.min_rescale
+    value = (value - min_range) / (255 - min_range)
+    return d3.interpolateViridis(value)
   },
 
   logChanged: function() {
