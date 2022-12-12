@@ -4,20 +4,15 @@
     <script src="bower_components/platform/platform.js"></script>
     <link rel="stylesheet" href="style.css">
     <link rel="import" href="g-spectrogram.html">
-    <link href='//fonts.googleapis.com/css?family=Inconsolata' rel='stylesheet' type='text/css'>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
   <body>
     <g-spectrogram controls labels log oscillator></g-spectrogram>
 
     <div id="instructions">
-      <h2>Spectrogram & Oscillator</h2>
-      <ol>
-      <li>^ Allow use of your microphone ^</li>
-      <li>Click or tap anywhere canvas to generate a tone</li>
-    </ol>
+      <h2>Click to start.</h2>
     </div>
   <!-- TODO - add as bower component if loading from url not possible -->
-  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="./bower_components/d3.min.js"></script>
   </body>
 </html>

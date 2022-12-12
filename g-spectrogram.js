@@ -1,21 +1,23 @@
 Polymer('g-spectrogram', {
-  // Show the controls UI.
-  controls: false,
   // Log mode.
-  log: false,
-  // Show axis labels, and how many ticks.
-  labels: false,
-  ticks: 5,
+  log: true,
+  // Speed of the visualization
   speed: 2,
   // FFT bin size,
-  fftsize: 2048*4,   // TODO - ADJUST WINDOW with factor
-  min_rescale: 1,
-  oscillator: false,
-  color: false,
+  fftsize: 2048*8,   // TODO - ADJUST WINDOW with factor
+  // color scale controls
+  min_rescale: 50,  // [1-255]
+  color: true,   // true/false
+  smoother: 0.5, // [0-1]
 
   attachedCallback: async function() {
     this.tempCanvas = document.createElement('canvas'),
     console.log('Created spectrogram');
+
+    // remove instruction on start
+    const instruction = document.getElementById('instructions');
+    window.addEventListener('mousedown', () => instruction.style.visibility = 'hidden');
+    window.addEventListener('touchstart', () => instruction.style.visibility = 'hidden');
 
     // Require user gesture before creating audio context, etc.
     window.addEventListener('mousedown', () => this.createAudioGraph());
@@ -58,10 +60,6 @@ Polymer('g-spectrogram', {
 
     //this.renderTimeDomain();
     this.renderFreqDomain();
-
-    if (this.labels && didResize) {
-      this.renderAxesLabels();
-    }
 
     requestAnimationFrame(this.render.bind(this));
 
@@ -149,55 +147,6 @@ Polymer('g-spectrogram', {
     return Math.log(val) / Math.log(base);
   },
 
-  renderAxesLabels: function() {
-    if (!this.audioContext) {
-      return;
-    }
-    var canvas = this.$.labels;
-    canvas.width = this.width;
-    canvas.height = this.height;
-    var ctx = canvas.getContext('2d');
-    var startFreq = 440;
-    var nyquist = this.audioContext.sampleRate/2;
-    var endFreq = nyquist - startFreq;
-    var step = (endFreq - startFreq) / this.ticks;
-    var yLabelOffset = 5;
-    // Render the vertical frequency axis.
-    for (var i = 0; i <= this.ticks; i++) {
-      var freq = startFreq + (step * i);
-      // Get the y coordinate from the current label.
-      var index = this.freqToIndex(freq);
-      var percent = index / this.getFFTBinCount();
-      var y = (1-percent) * this.height;
-      var x = this.width - 60;
-      // Get the value for the current y coordinate.
-      var label;
-      if (this.log) {
-        // Handle a logarithmic scale.
-        var logIndex = this.logScale(index, this.getFFTBinCount());
-        // Never show 0 Hz.
-        freq = Math.max(1, this.indexToFreq(logIndex));
-      }
-      var label = this.formatFreq(freq);
-      var units = this.formatUnits(freq);
-      ctx.font = '16px Inconsolata';
-      // Draw the value.
-      ctx.textAlign = 'right';
-      ctx.fillText(label, x, y + yLabelOffset);
-      // Draw the units.
-      ctx.textAlign = 'left';
-      ctx.fillText(units, x + 10, y + yLabelOffset);
-      // Draw a tick mark.
-      ctx.fillRect(x + 40, y, 30, 2);
-    }
-  },
-
-  clearAxesLabels: function() {
-    var canvas = this.$.labels;
-    var ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, this.width, this.height);
-  },
-
   formatFreq: function(freq) {
     return (freq >= 1000 ? (freq/1000).toFixed(1) : Math.round(freq));
   },
@@ -223,7 +172,7 @@ Polymer('g-spectrogram', {
   onStream: function(stream) {
     var input = this.audioContext.createMediaStreamSource(stream);
     var analyser = this.audioContext.createAnalyser();
-    analyser.smoothingTimeConstant = 0.5;  // TODO - ADJUST [0-1]
+    analyser.smoothingTimeConstant = this.smoother;
     analyser.fftSize = this.fftsize;
 
     // Connect graph.
@@ -250,24 +199,4 @@ Polymer('g-spectrogram', {
     value = (value - min_range) / (255 - min_range)
     return d3.interpolateViridis(value)
   },
-
-  logChanged: function() {
-    if (this.labels) {
-      this.renderAxesLabels();
-    }
-  },
-
-  ticksChanged: function() {
-    if (this.labels) {
-      this.renderAxesLabels();
-    }
-  },
-
-  labelsChanged: function() {
-    if (this.labels) {
-      this.renderAxesLabels();
-    } else {
-      this.clearAxesLabels();
-    }
-  }
 });
