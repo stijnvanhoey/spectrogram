@@ -6,7 +6,7 @@ Polymer('g-spectrogram', {
   // FFT bin size,
   fftsize: 2048*8,   // TODO - ADJUST WINDOW with factor
   // color scale controls
-  min_rescale: 25,  // [1-255]
+  min_rescale: 50,  // [1-255]
   color: true,   // true/false
   smoother: 0.5, // [0-1]
 
