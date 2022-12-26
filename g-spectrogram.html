@@ -2,18 +2,15 @@
 
 <polymer-element name="g-spectrogram" attributes="log speed fftsize min_scale color smoother">
   <template>
-  <style>
-    canvas {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-    }
-    g-spectrogram-controls {
-      position: absolute;
-    }
-  </style>
+    <style>
+      canvas {
+        position: relative;
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
     <canvas id="canvas"></canvas>
-    <canvas id="labels"></canvas>
   </template>
   <script src="g-spectrogram.js"></script>
 </polymer-element>
