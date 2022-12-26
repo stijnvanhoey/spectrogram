@@ -41,7 +41,10 @@ Polymer('g-spectrogram', {
   },
 
   render: function() {
-    this.width = window.innerWidth / 2;
+    const styles = getComputedStyle(document.documentElement);
+    const spectroWidth = styles.getPropertyValue('--spectro-width');
+
+    this.width = window.innerWidth * spectroWidth / 100;
     this.height = window.innerHeight;
 
     var didResize = false;
