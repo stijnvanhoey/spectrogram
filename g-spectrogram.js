@@ -4,7 +4,7 @@ Polymer('g-spectrogram', {
   // Speed of the visualization
   speed: 2,
   // FFT bin size,
-  fftsize: 2048*8,   // TODO - ADJUST WINDOW with factor
+  fftsize: 2048*8,   // fft window size (*2, *4, *8,...)
   // color scale controls
   min_rescale: 50,  // [1-255]
   color: true,   // true/false
@@ -41,20 +41,17 @@ Polymer('g-spectrogram', {
   },
 
   render: function() {
-    //console.log('Render');
-    this.width = window.innerWidth;
+    this.width = window.innerWidth / 2;
     this.height = window.innerHeight;
 
     var didResize = false;
     // Ensure dimensions are accurate.
     if (this.$.canvas.width != this.width) {
       this.$.canvas.width = this.width;
-      this.$.labels.width = this.width;
       didResize = true;
     }
     if (this.$.canvas.height != this.height) {
       this.$.canvas.height = this.height;
-      this.$.labels.height = this.height;
       didResize = true;
     }
 
@@ -97,7 +94,6 @@ Polymer('g-spectrogram', {
     // Copy the current canvas onto the temp canvas.
     this.tempCanvas.width = this.width;
     this.tempCanvas.height = this.height;
-    //console.log(this.$.canvas.height, this.tempCanvas.height);
     var tempCtx = this.tempCanvas.getContext('2d');
     tempCtx.drawImage(this.$.canvas, 0, 0, this.width, this.height);
 
